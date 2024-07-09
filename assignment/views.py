@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Assignment
 from .forms import AssignmentForm
 
+
+
+
 @login_required
 def assignment_list(request):
     assignments = Assignment.objects.filter(user=request.user)

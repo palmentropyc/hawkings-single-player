@@ -68,7 +68,10 @@ INSTALLED_APPS = [
     'django_api_gen',
 
     "debug_toolbar",
-        'assignment',
+    'assignment',
+    'grade',
+
+        
 
 ]
 
@@ -91,7 +94,7 @@ UI_TEMPLATES = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [UI_TEMPLATES],
+        'DIRS': [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
