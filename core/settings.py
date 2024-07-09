@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     'django_api_gen',
 
     "debug_toolbar",
+        'assignment',
+
 ]
 
 MIDDLEWARE = [
