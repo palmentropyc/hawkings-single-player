@@ -8,7 +8,7 @@ from .forms import AssignmentForm
 
 @login_required
 def assignment_list(request):
-    assignments = Assignment.objects.filter(user=request.user)
+    assignments = Assignment.objects.filter(teacher=request.user)
     return render(request, 'assignment/list.html', {'assignments': assignments})
 
 @login_required

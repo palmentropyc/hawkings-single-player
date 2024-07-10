@@ -39,34 +39,10 @@
     </div>
   </div>
   <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
       {% csrf_token %}
-      <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-        {% for field in form %}
-        <div class="sm:col-span-2">
-          <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ field.help_text|safe }}</p>
-          {% endif %}
-          {% if field.errors %}
-          <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-            {% for error in field.errors %}
-            {{ error }}
-            {% endfor %}
-          </p>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
-      <div class="flex items-center space-x-4 mt-6">
-        <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-          Create grade
-        </button>
-        <a href="{% url 'grade_list' %}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-          Cancel
-        </a>
-      </div>
+      {{ form.as_p }}
+      <button type="submit">Submit Grade</button>
     </form>
   </div>
 </main>

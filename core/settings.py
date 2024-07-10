@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'assignment',
     'grade',
+    'bot',
 
         
 

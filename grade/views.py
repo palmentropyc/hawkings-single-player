@@ -2,19 +2,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Grade
 from .forms import GradeForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 
 @login_required
 def grade_list(request):
-    grades = Grade.objects.filter(user=request.user)
+    grades = Grade.objects.filter(assignment__teacher=request.user)
     return render(request, 'grade/grade_list.html', {'grades': grades})
 
 @login_required
 def grade_create(request):
     if request.method == 'POST':
-        form = GradeForm(request.POST, request.FILES)
+        form = GradeForm(request.POST)
         if form.is_valid():
             grade = form.save(commit=False)
-            grade.user = request.user
+            grade.grader = request.user  # Assign the logged-in user (teacher) as the grader
             grade.save()
             return redirect('grade_list')
     else:
