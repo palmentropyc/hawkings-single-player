@@ -14,4 +14,4 @@ class StudentForm(forms.ModelForm):
 class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade
-        fields = ['enabled', 'evaluated_at', 'is_archived', 'grade_numeric', 'error_message', 'ai_behaviour', 'ai_status', 'grade_feedback', 'grader_comments', 'local_path', 'grade_questions', 'grade_student_response', 'grade_rubric', 'error_type', 'language', 'assignment', 'student']
+        fields = ['student', 'evaluated_at', 'language', 'assignment', 'local_path']

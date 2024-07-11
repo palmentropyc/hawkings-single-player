@@ -2,6 +2,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
 from .models import Assignment, Student, Grade, Language
 from .forms import AssignmentForm, StudentForm, GradeForm
+from django.utils import timezone
 
 
 
@@ -12,7 +13,7 @@ class AssignmentListView(ListView):
     context_object_name = 'assignments'
 
 class AssignmentCreateView(CreateView):
-    model = Assignment
+    model = Assignment    
     form_class = AssignmentForm
     template_name = 'grade/assignment_form.html'
     success_url = reverse_lazy('assignment-list')
@@ -75,7 +76,9 @@ class GradeCreateView(CreateView):
         context['languages'] = Language.objects.all()
         context['assignments'] = Assignment.objects.all()
         context['students'] = Student.objects.all()
+        context['current_datetime'] = timezone.now()
         return context
+
 
 
 

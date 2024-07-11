@@ -4,7 +4,7 @@
 {% block content %}
 <main class="p-4 bg-white dark:bg-gray-800">
   <div class="block sm:flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-4">
-    <div class="w-full mb-4">
+    <div class="w-full max-w-lg mb-4">
       <nav class="flex mb-5" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
           <li class="inline-flex items-center">
@@ -29,82 +29,42 @@
     </div>
   </div>
 
-  <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+  <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow max-w-3xl">
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label for="grade_numeric" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grade Numeric</label>
-          <input type="number" name="grade_numeric" id="grade_numeric" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-        </div>
-        <div>
-          <label for="evaluated_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Evaluated At</label>
-          <input type="datetime-local" name="evaluated_at" id="evaluated_at" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-        </div>
-        <div>
-          <label for="language" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Language</label>
-          <select name="language" id="language" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-            {% for language in languages %}
-              <option value="{{ language.id }}">{{ language.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div>
-          <label for="assignment" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment</label>
-          <select name="assignment" id="assignment" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-            {% for assignment in assignments %}
-              <option value="{{ assignment.id }}">{{ assignment.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div>
+        <div class="w-full max-w-md">
           <label for="student" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Student</label>
-          <select name="student" id="student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+          <select name="student" id="student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
             {% for student in students %}
               <option value="{{ student.id }}">{{ student.name }} {{ student.surname }}</option>
             {% endfor %}
           </select>
         </div>
-        <div>
-          <label for="ai_status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">AI Status</label>
-          <input type="text" name="ai_status" id="ai_status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+        <div class="w-full max-w-md">
+          <label for="evaluated_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
+          <input type="datetime-local" name="evaluated_at" id="evaluated_at" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required value="{{ current_datetime|date:'Y-m-d\TH:i' }}">
         </div>
-        <div>
-          <label for="grade_feedback" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grade Feedback</label>
-          <textarea name="grade_feedback" id="grade_feedback" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+        <div class="w-full max-w-md">
+          <label for="language" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Language</label>
+          <select name="language" id="language" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+            {% for language in languages %}
+              <option value="{{ language.id }}">{{ language.name }}</option>
+            {% endfor %}
+          </select>
         </div>
-        <div>
-          <label for="grader_comments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grader Comments</label>
-          <textarea name="grader_comments" id="grader_comments" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+        <div class="w-full max-w-md">
+          <label for="assignment" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment</label>
+          <select name="assignment" id="assignment" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+            {% for assignment in assignments %}
+              <option value="{{ assignment.id }}">{{ assignment.name }}</option>
+            {% endfor %}
+          </select>
         </div>
-        <div>
-          <label for="grade_questions" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grade Questions</label>
-          <textarea name="grade_questions" id="grade_questions" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+        <div class="w-full max-w-md">
+          <label for="local_path" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Local Path</label>
+          <input type="file" name="local_path" id="local_path" accept=".docx, .pdf" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
         </div>
-        <div>
-          <label for="grade_student_response" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grade Student Response</label>
-          <textarea name="grade_student_response" id="grade_student_response" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
-        </div>
-        <div>
-          <label for="grade_rubric" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Grade Rubric</label>
-          <textarea name="grade_rubric" id="grade_rubric" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
-        </div>
-        <div>
-          <label for="error_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Error Message</label>
-          <textarea name="error_message" id="error_message" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
-        </div>
-        <div>
-          <label for="error_type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Error Type</label>
-          <input type="text" name="error_type" id="error_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-        </div>
-        <div>
-          <label for="ai_behaviour" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">AI Behaviour</label>
-          <textarea name="ai_behaviour" id="ai_behaviour" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
-        </div>
-        <div>
-            <label for="local_path" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Local Path</label>
-            <input type="file" name="local_path" id="local_path" accept=".docx, .pdf" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-          </div>          
       </div>
       <div class="mt-4">
         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-primary-800">Save</button>
