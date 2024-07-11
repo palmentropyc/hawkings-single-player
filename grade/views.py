@@ -3,6 +3,9 @@ from django.views.generic import ListView, CreateView, DetailView
 from .models import Assignment, Student, Grade, Language
 from .forms import AssignmentForm, StudentForm, GradeForm
 
+
+
+
 class AssignmentListView(ListView):
     model = Assignment
     template_name = 'grade/assignment_list.html'
@@ -34,11 +37,18 @@ class StudentListView(ListView):
     template_name = 'grade/student_list.html'
     context_object_name = 'students'
 
+
+
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'grade/student_form.html'
     success_url = reverse_lazy('student-list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
 class StudentDetailView(DetailView):
     model = Student
@@ -68,7 +78,9 @@ class GradeCreateView(CreateView):
         return context
 
 
+
 class GradeDetailView(DetailView):
     model = Grade
     template_name = 'grade/grade_detail.html'
     context_object_name = 'grade'
+
