@@ -25,6 +25,7 @@ from django.views.static import serve
 urlpatterns = [
     path("", include("home.urls")),
     path("admin/", admin.site.urls),
+    path('', include('grade.urls')),  # Incluye las rutas de la aplicación grade en la raíz
     path("api/", include("apps.api.urls")),
     path("users/", include("apps.users.urls")),
     path("charts/", include("apps.charts.urls")),
@@ -40,3 +41,4 @@ urlpatterns = [
 
 urlpatterns += static(settings.CELERY_LOGS_URL, document_root=settings.CELERY_LOGS_DIR)
 urlpatterns += static(settings.MEDIA_URL      , document_root=settings.MEDIA_ROOT     )
+

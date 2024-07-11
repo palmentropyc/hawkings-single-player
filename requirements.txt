@@ -23,5 +23,9 @@ whitenoise==6.5.0
 gunicorn==21.2.0
 
 # DB Layer
-# psycopg2-binary==3.1.12
+psycopg2-binary
 # mysqlclient==2.2.0
+
+
+openai
+bson
