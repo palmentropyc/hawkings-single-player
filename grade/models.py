@@ -47,7 +47,7 @@ class Student(models.Model):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='students')
 
     def __str__(self):
         return f"{self.name} {self.surname}"
@@ -56,6 +56,7 @@ class Student(models.Model):
         if not self.uuid:
             self.uuid = str(ObjectId())
         super().save(*args, **kwargs)
+
 
 class Grade(models.Model):
     id = models.BigAutoField(primary_key=True)

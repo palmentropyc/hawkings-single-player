@@ -40,6 +40,11 @@
               <option value="{{ student.id }}">{{ student.name }} {{ student.surname }}</option>
             {% endfor %}
           </select>
+        <div class="mt-2">
+          <a href="/student/new/" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+            Create new student
+          </a>
+        </div>
         </div>
         <div class="w-full max-w-md">
           <label for="evaluated_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>

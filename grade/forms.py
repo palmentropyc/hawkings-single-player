@@ -11,6 +11,7 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = ['name', 'surname', 'email']
 
+
 class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade

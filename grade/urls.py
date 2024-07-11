@@ -15,4 +15,6 @@ urlpatterns = [
     path('grade/', GradeListView.as_view(), name='grade-list'),
     path('grade/new/', GradeCreateView.as_view(), name='grade_create'),
     path('grade/<int:pk>/', GradeDetailView.as_view(), name='grade_detail'),
+    
+
 ]
