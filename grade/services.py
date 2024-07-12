@@ -85,9 +85,12 @@ def extract_text(file_path):
         print(f"Extracting text locally from {file_path}")
         return extract_text_pdf_local(file_path)
     else:
-        logger.debug("Extracting text with Jina")
-        print("Extracting text with Jina")
-        return extract_text_from_pdf_with_jina(file_path)
+        #logger.debug("Extracting text with Jina")
+        #print("Extracting text with Jina")
+        #return extract_text_from_pdf_with_jina(file_path)
+        logger.debug(f"Extracting text locally from {file_path}")
+        print(f"Extracting text locally from {file_path}")
+        return extract_text_pdf_local(file_path)
 
 def update_grade_final_status(grade, text_extracted):
     logger.debug(f"Updating final status for grade: {grade.id}")
