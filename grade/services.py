@@ -9,7 +9,8 @@ from json import JSONDecodeError
 from openai import OpenAI
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
+
 
 def process_submission_with_ai(grade_id):
     logger.debug(f"Processing submission with AI for grade_id: {grade_id}")

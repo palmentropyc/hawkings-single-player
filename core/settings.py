@@ -22,15 +22,11 @@ import logging.handlers
 from datetime import datetime
 load_dotenv()  # take environment variables from .env.
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
-
-
 # Definir la ruta del archivo de log
-
 LOGGING_DIR = BASE_DIR / 'logs'
 
 # Crear el directorio de logs si no existe
