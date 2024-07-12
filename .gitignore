@@ -27,3 +27,8 @@ apps/helpers
 !/media/Sales.csv
 .env
 /media/uploads
+/logs
+.env
+.env
+.env
+.env

@@ -15,11 +15,62 @@ from pathlib        import Path
 from dotenv         import load_dotenv
 from str2bool       import str2bool
 from django.contrib import messages
-
+import os
+from pathlib import Path
+import logging
+import logging.handlers
+from datetime import datetime
 load_dotenv()  # take environment variables from .env.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+
+
+# Definir la ruta del archivo de log
+
+LOGGING_DIR = BASE_DIR / 'logs'
+
+# Crear el directorio de logs si no existe
+os.makedirs(LOGGING_DIR, exist_ok=True)
+
+# Obtener la fecha actual en formato YYYY-MM-DD
+current_date = datetime.now().strftime('%Y-%m-%d')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOGGING_DIR / f'django_{current_date}.log',
+            'when': 'midnight',
+            'backupCount': 30,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -27,7 +78,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
-    SECRET_KEY = 'SuperSecret776'
+    SECRET_KEY = 'BLl6mD7KBxR3n(uF1G2xK'
 
 # Enable/Disable DEBUG Mode
 DEBUG = str2bool(os.environ.get('DEBUG'))
