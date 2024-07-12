@@ -30,4 +30,4 @@ psycopg2-binary
 openai
 bson
 PyPDF2
-
+requests
