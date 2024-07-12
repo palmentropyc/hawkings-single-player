@@ -38,6 +38,7 @@ os.makedirs(LOGGING_DIR, exist_ok=True)
 
 # Obtener la fecha actual en formato YYYY-MM-DD
 current_date = datetime.now().strftime('%Y-%m-%d')
+DEBUG = True
 
 LOGGING = {
     'version': 1,
