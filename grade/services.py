@@ -27,12 +27,17 @@ def process_with_ai(grade):
     print("Procesando con AI")
     grade.ai_status = 'processing'    
     grade.save()
+    assignment_questions = grade.assignment.assignment_questions
+    assignment_rubric = grade.assignment.assignment_rubric
+    full_prompt = f"Eres un profesor experto, vas a corregir un examen. Estas son las preguntas:\n {assignment_questions}\n, esta es la rbrica y criterios de correccion:\n {assignment_rubric}\n y estas son las respuetas del alumno\n {grade.grade_student_response}"
+    print(full_prompt)
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "Resume este texto"}, {"role": "user", "content": grade.grade_student_response}]
+        messages=[{"role": "system", "content": "Resume este texto"}, {"role": "user", "content": full_prompt}]
     )
     grade.grade_feedback = response.choices[0].message.content
+    grade.ai_status = 'ai_processed_ok'  
     grade.save()
 
 
