@@ -30,23 +30,94 @@
   </div>
 
   <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Grade Information</h2>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grade Numeric: {{ grade.grade_numeric }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Evaluated At: {{ grade.evaluated_at }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">AI Status: {{ grade.ai_status }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grade Feedback: {{ grade.grade_feedback }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grader Comments: {{ grade.grader_comments }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grade Questions: {{ grade.grade_questions }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grade Student Response: {{ grade.grade_student_response }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Grade Rubric: {{ grade.grade_rubric }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Error Message: {{ grade.error_message }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Error Type: {{ grade.error_type }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">AI Behaviour: {{ grade.ai_behaviour }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Local Path: <a href="{{ grade.local_path.url }}" class="text-blue-600 hover:underline dark:text-blue-400">{{ grade.local_path.name }}</a></p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Language: {{ grade.language.name }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Assignment: {{ grade.assignment.name }}</p>
-    <p class="text-sm font-medium text-gray-900 dark:text-white">Student: {{ grade.student.name }} {{ grade.student.surname }}</p>
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Grade Information</h2>
+    
+    <div class="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <div class="flex items-center">
+        <label for="grade" class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Grade:</label>
+        <input type="number" id="grade" name="grade" value="{{ grade.grade_numeric }}" class="w-20 p-1 text-lg font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+      </div>
+      <div class="flex items-center">
+        <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Evaluated At:</span>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.evaluated_at }}</span>
+      </div>
+      <div class="flex items-center">
+        <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">AI Status:</span>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.ai_status }}</span>
+      </div>
+      <div class="flex items-center">
+        <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Language:</span>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.language.name }}</span>
+      </div>
+      <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Assignment: <span class="text-gray-900 dark:text-white">{{ grade.assignment.name }}</span> |
+          Student: <span class="text-gray-900 dark:text-white">{{ grade.student.name }} {{ grade.student.surname }}</span>
+        </p>
+      </div>
+    </div>
 
+      
+      
+    
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Feedback and Comments</h3>
+      <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade Feedback</p>
+        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_feedback }}</p>
+      </div>
+      <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grader Comments</p>
+        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grader_comments }}</p>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Questions and Rubric</h3>
+      <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade Questions</p>
+        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_questions }}</p>
+      </div>
+      <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade Rubric</p>
+        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_rubric }}</p>
+      </div>
+    </div>
+
+    {% if user.is_superuser %}
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Student Response</h3>
+      <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Grade Student Response:</p>
+        <textarea class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" rows="10" readonly>{{ grade.grade_student_response }}</textarea>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Additional Information</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Error Message</p>
+          <p class="mt-1 text-gray-900 dark:text-white">{{ grade.error_message }}</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Error Type</p>
+          <p class="mt-1 text-gray-900 dark:text-white">{{ grade.error_type }}</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">AI Behaviour</p>
+          <p class="mt-1 text-gray-900 dark:text-white">{{ grade.ai_behaviour }}</p>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Local Path</p>
+          <a href="{{ grade.local_path.url }}" class="mt-1 text-blue-600 hover:underline dark:text-blue-400">{{ grade.local_path.name }}</a>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
     <!-- Añadir el botón -->
     <form method="post" action="">
       {% csrf_token %}
