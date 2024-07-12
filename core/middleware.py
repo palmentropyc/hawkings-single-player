@@ -6,7 +6,7 @@ class LoginRequiredMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if not request.user.is_authenticated and not request.path.startswith(reverse('signin')):
-            return redirect(reverse('signin'))  # Usa reverse para obtener la URL
+        if not request.user.is_authenticated and not (request.path.startswith(reverse('signin')) or request.path.startswith(reverse('signup'))):
+            return redirect(reverse('signin'))
         response = self.get_response(request)
         return response
