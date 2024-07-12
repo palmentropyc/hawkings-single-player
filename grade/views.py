@@ -2,12 +2,15 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from .forms import AssignmentForm, GradeForm, StudentForm
 from .models import Assignment, Grade, Language, Student
 from .services import process_submission_with_ai  # Importa la función síncrona
 
 
+@method_decorator(login_required, name='dispatch')
 class AssignmentListView(ListView):
     model = Assignment
     template_name = 'grade/assignment_list.html'
@@ -15,6 +18,7 @@ class AssignmentListView(ListView):
     ordering = ['-id']  # Order by id in descending order
 
 
+@method_decorator(login_required, name='dispatch')
 class AssignmentCreateView(CreateView):
     model = Assignment
     form_class = AssignmentForm
@@ -31,13 +35,14 @@ class AssignmentCreateView(CreateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class AssignmentDetailView(DetailView):
     model = Assignment
     template_name = 'grade/assignment_detail.html'
     context_object_name = 'assignment'
 
 
-
+@method_decorator(login_required, name='dispatch')
 class AssignmentUpdateView(UpdateView):
     model = Assignment
     form_class = AssignmentForm
@@ -48,9 +53,7 @@ class AssignmentUpdateView(UpdateView):
         return reverse_lazy('assignment-list')
 
 
-
-
-
+@method_decorator(login_required, name='dispatch')
 class StudentListView(ListView):
     model = Student
     template_name = 'grade/student_list.html'
@@ -58,6 +61,7 @@ class StudentListView(ListView):
     ordering = ['-id']  # Order by id in descending order
 
 
+@method_decorator(login_required, name='dispatch')
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
@@ -69,6 +73,7 @@ class StudentCreateView(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class StudentDetailView(DetailView):
     model = Student
     template_name = 'grade/student_detail.html'
@@ -92,6 +97,7 @@ class StudentDetailView(DetailView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class GradeListView(ListView):
     model = Grade
     template_name = 'grade/grade_list.html'
@@ -99,6 +105,7 @@ class GradeListView(ListView):
     ordering = ['-id']  # Order by id in descending order
 
 
+@method_decorator(login_required, name='dispatch')
 class GradeCreateView(CreateView):
     model = Grade
     form_class = GradeForm
@@ -124,6 +131,7 @@ class GradeCreateView(CreateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class GradeDetailView(DetailView):
     model = Grade
     template_name = 'grade/grade_detail.html'

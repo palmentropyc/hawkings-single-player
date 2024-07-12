@@ -80,6 +80,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'core.middleware.LoginRequiredMiddleware',
+
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -206,6 +208,7 @@ CELERY_TASK_SERIALIZER    = 'json'
 CELERY_RESULT_SERIALIZER  = 'json'
 ########################################
 
+LOGIN_URL = '/users/signin/'
 
 LOGIN_REDIRECT_URL = '/'
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
