@@ -1,11 +1,11 @@
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView
-from .models import Assignment, Student, Grade, Language
-from .forms import AssignmentForm, StudentForm, GradeForm
-from django.utils import timezone
-from .services import process_submission_with_ai  # Importa la función síncrona
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from .forms import AssignmentForm, GradeForm, StudentForm
+from .models import Assignment, Grade, Language, Student
+from .services import process_submission_with_ai  # Importa la función síncrona
 
 
 class AssignmentListView(ListView):
@@ -14,8 +14,9 @@ class AssignmentListView(ListView):
     context_object_name = 'assignments'
     ordering = ['-id']  # Order by id in descending order
 
+
 class AssignmentCreateView(CreateView):
-    model = Assignment    
+    model = Assignment
     form_class = AssignmentForm
     template_name = 'grade/assignment_form.html'
     success_url = reverse_lazy('assignment-list')
@@ -35,12 +36,26 @@ class AssignmentDetailView(DetailView):
     template_name = 'grade/assignment_detail.html'
     context_object_name = 'assignment'
 
+
+
+class AssignmentUpdateView(UpdateView):
+    model = Assignment
+    form_class = AssignmentForm
+    template_name = 'grade/assignment_detail.html'
+    context_object_name = 'assignment'
+
+    def get_success_url(self):
+        return reverse_lazy('assignment-list')
+
+
+
+
+
 class StudentListView(ListView):
     model = Student
     template_name = 'grade/student_list.html'
     context_object_name = 'students'
     ordering = ['-id']  # Order by id in descending order
-
 
 
 class StudentCreateView(CreateView):
@@ -59,14 +74,29 @@ class StudentDetailView(DetailView):
     template_name = 'grade/student_detail.html'
     context_object_name = 'student'
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if 'save_changes' in request.POST:
+            self.object.name = request.POST.get('name')
+            self.object.surname = request.POST.get('surname')
+            self.object.email = request.POST.get('email')
+            self.object.save()
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('student-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['grades'] = self.object.grade_set.all()
+        return context
+
+
 class GradeListView(ListView):
     model = Grade
     template_name = 'grade/grade_list.html'
     context_object_name = 'grades'
     ordering = ['-id']  # Order by id in descending order
-
-
-
 
 
 class GradeCreateView(CreateView):
@@ -92,7 +122,6 @@ class GradeCreateView(CreateView):
         context['students'] = Student.objects.all()
         context['current_datetime'] = timezone.now()
         return context
-
 
 
 class GradeDetailView(DetailView):

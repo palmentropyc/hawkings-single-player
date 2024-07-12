@@ -1,0 +1,82 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="p-4 bg-white dark:bg-gray-800">
+  <div class="block sm:flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-4">
+    <div class="w-full mb-4">
+      <nav class="flex mb-5" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
+          <li class="inline-flex items-center">
+            <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-white">
+              <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+              </svg>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">Student Details</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+      <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Student Details</h1>
+    </div>
+  </div>
+
+  <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Student Information</h2>
+    
+    <form method="post" action="{% url 'student_detail' student.id %}" class="mb-4">
+      {% csrf_token %}
+      <div class="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div class="flex items-center">
+          <label for="name" class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Name:</label>
+          <input type="text" id="name" name="name" value="{{ student.name }}" class="text-lg font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded p-1">
+        </div>
+        <div class="flex items-center">
+          <label for="surname" class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Surname:</label>
+          <input type="text" id="surname" name="surname" value="{{ student.surname }}" class="text-lg font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded p-1">
+        </div>
+        <div class="flex items-center">
+          <label for="email" class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Email:</label>
+          <input type="email" id="email" name="email" value="{{ student.email }}" class="text-lg font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded p-1">
+        </div>
+        <button type="submit" name="save_changes" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+          Save Changes
+        </button>
+      </div>
+
+    </form>
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Grades</h3>
+      {% for grade in student.grade_set.all %}
+        <div class="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <h4 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{{ grade.assignment.name }}</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade:</p>
+              <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_numeric }}</p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Created At:</p>
+              <p class="mt-1 text-gray-900 dark:text-white">{{ grade.created_at }}</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade Feedback:</p>
+              <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_feedback }}</p>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 dark:text-gray-400">No grades available for this student.</p>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+{% endblock content %}

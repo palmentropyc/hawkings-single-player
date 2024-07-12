@@ -1,10 +1,12 @@
 from django import forms
 from .models import Assignment, Student, Grade
 
+
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['name', 'assignment_questions', 'assignment_rubric', 'assignment_full_text', 'language']
+        fields = ['name', 'assignment_questions', 'assignment_rubric', 'assignment_full_text']
+
 
 class StudentForm(forms.ModelForm):
     class Meta:
