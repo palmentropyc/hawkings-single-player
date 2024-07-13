@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -17,6 +18,10 @@ class AssignmentListView(ListView):
     context_object_name = 'assignments'
     ordering = ['-id']  # Order by id in descending order
 
+    def get_queryset(self):
+        return Assignment.objects.filter(user=self.request.user).order_by('-id')
+
+
 
 @method_decorator(login_required, name='dispatch')
 class AssignmentCreateView(CreateView):
@@ -29,10 +34,6 @@ class AssignmentCreateView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['languages'] = Language.objects.all()
-        return context
 
 
 @method_decorator(login_required, name='dispatch')
@@ -40,6 +41,13 @@ class AssignmentDetailView(DetailView):
     model = Assignment
     template_name = 'grade/assignment_detail.html'
     context_object_name = 'assignment'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404  # or return a redirect to a not authorized page
+        return obj
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -59,6 +67,10 @@ class StudentListView(ListView):
     template_name = 'grade/student_list.html'
     context_object_name = 'students'
     ordering = ['-id']  # Order by id in descending order
+
+    def get_queryset(self):
+        return Student.objects.filter(user=self.request.user).order_by('-id')
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -104,6 +116,8 @@ class GradeListView(ListView):
     context_object_name = 'grades'
     ordering = ['-id']  # Order by id in descending order
 
+    def get_queryset(self):
+        return Grade.objects.filter(user=self.request.user).order_by('-id')
 
 @method_decorator(login_required, name='dispatch')
 class GradeCreateView(CreateView):
