@@ -91,6 +91,12 @@ class StudentDetailView(DetailView):
     template_name = 'grade/student_detail.html'
     context_object_name = 'student'
 
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("You don't have permission to view this student.")
+        return obj
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         if 'save_changes' in request.POST:
@@ -105,7 +111,7 @@ class StudentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['grades'] = self.object.grade_set.all()
+        context['grades'] = self.object.grade_set.filter(user=self.request.user)
         return context
 
 
@@ -130,7 +136,6 @@ class GradeCreateView(CreateView):
         form.instance.user = self.request.user
         response = super().form_valid(form)
         
-        # Llamar a la función síncrona pasando el ID del Grade
         if form.instance.local_path:
             process_submission_with_ai(form.instance.id)
         
@@ -139,21 +144,25 @@ class GradeCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['languages'] = Language.objects.all()
-        context['assignments'] = Assignment.objects.all()
-        context['students'] = Student.objects.all()
+        context['assignments'] = Assignment.objects.filter(user=self.request.user)
+        context['students'] = Student.objects.filter(user=self.request.user)
         context['current_datetime'] = timezone.now()
         return context
 
 
-@method_decorator(login_required, name='dispatch')
 class GradeDetailView(DetailView):
     model = Grade
     template_name = 'grade/grade_detail.html'
     context_object_name = 'grade'
 
-    def post(self, request, *args, **kwargs):
-        grade = self.get_object()
-        if 'ask_ai_grade_again' in request.POST:
-            process_submission_with_ai(grade.id)
-            # Puedes añadir un mensaje de éxito o cualquier otra lógica aquí
-        return self.get(request, *args, **kwargs)
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("You don't have permission to view this grade.")
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['assignments'] = Assignment.objects.filter(user=self.request.user)
+        context['students'] = Student.objects.filter(user=self.request.user)
+        return context
