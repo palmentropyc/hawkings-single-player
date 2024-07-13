@@ -150,6 +150,9 @@ class GradeCreateView(CreateView):
         return context
 
 
+
+
+@method_decorator(login_required, name='dispatch')
 class GradeDetailView(DetailView):
     model = Grade
     template_name = 'grade/grade_detail.html'
@@ -165,4 +168,11 @@ class GradeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['assignments'] = Assignment.objects.filter(user=self.request.user)
         context['students'] = Student.objects.filter(user=self.request.user)
-        return context
+        return context 
+
+    def post(self, request, *args, **kwargs):
+        grade = self.get_object()
+        if 'ask_ai_grade_again' in request.POST:
+            process_submission_with_ai(grade.id)
+            # Puedes añadir un mensaje de éxito o cualquier otra lógica aquí
+        return self.get(request, *args, **kwargs)
