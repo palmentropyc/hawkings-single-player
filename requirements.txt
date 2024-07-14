@@ -33,3 +33,9 @@ PyPDF2
 requests
 django-countries
 django-widget-tweaks
+youtube_transcript_api
+django-celery-results
+download-youtube-subtitle
+google-api-python-client
+requests
+beautifulsoup4

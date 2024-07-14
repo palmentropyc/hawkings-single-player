@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+{% url 'studio:youtubevideo-list' %}
+
+{% load static %}
+
+{% block content %}
+<main>
+  <div class="px-4 pt-6">
+    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex-shrink-0">
+          <span class="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white">YouTube Videos</span>
+          <h3 class="text-base font-light text-gray-500 dark:text-gray-400">A list of all YouTube videos</h3>
+        </div>
+        <div class="flex items-center justify-end">
+          <a href="{% url 'studio:youtubevideo-create' %}" class="inline-flex items-center p-2 text-sm font-medium rounded-lg text-primary-700 sm:text-base hover:bg-gray-100 dark:text-primary-500 dark:hover:bg-gray-700">
+            Add new video
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-col mt-6">
+        <div class="overflow-x-auto rounded-lg">
+          <div class="inline-block min-w-full align-middle">
+            <div class="overflow-hidden shadow sm:rounded-lg">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Title
+                    </th>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Video ID
+                    </th>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Transcription
+                    </th>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800">
+                  {% for video in videos %}
+                  <tr class="{% cycle 'bg-white' 'bg-gray-50' %} dark:bg-gray-800">
+                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                      <a href="https://www.youtube.com/watch?v={{ video.video_id }}" target="_blank" rel="noopener noreferrer">
+                        {{ video.title }}
+                      </a>
+                    </td>
+                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                      {{ video.video_id }}
+                    </td>
+                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                      {{ video.transcript|truncatechars:50 }}
+                    </td>
+                    <td class="p-4 space-x-2 whitespace-nowrap">
+                      <a href="{% url 'studio:youtubevideo-detail' video.id %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        View
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

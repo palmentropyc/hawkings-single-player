@@ -26,6 +26,9 @@ urlpatterns = [
     path("", include("home.urls")),
     path("admin/", admin.site.urls),
     path('', include('grade.urls')),  # Incluye las rutas de la aplicación grade en la raíz
+    path('studio/', include('studio.urls')),  # Incluye las rutas de la aplicación studio con prefijo
+
+
     path("api/", include("apps.api.urls")),
     path("users/", include("apps.users.urls")),
     path("charts/", include("apps.charts.urls")),
