@@ -31,3 +31,5 @@ openai
 bson
 PyPDF2
 requests
+django-countries
+django-widget-tweaks

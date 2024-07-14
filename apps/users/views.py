@@ -36,6 +36,17 @@ class SignUpView(CreateView):
     template_name = "authentication/sign-up.html"
     success_url = "/users/signin/"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.object
+        profile = Profile.objects.create(
+            user=user,
+            type=form.cleaned_data['type'],
+            country=form.cleaned_data['country'],
+            language=form.cleaned_data['language']
+        )
+        return response
+
 class UserPasswordChangeView(PasswordChangeView):
     template_name = 'authentication/password-change.html'
     form_class = UserPasswordChangeForm
