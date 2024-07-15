@@ -5,13 +5,12 @@ from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import AssignmentForm, GradeForm, StudentForm, BotForm
 from .models import Assignment, Grade, Language, Student, Bot
 from .services import process_submission_with_ai  # Importa la función síncrona
-
-
-from .bots import create_bot
+import json
 
 @method_decorator(login_required, name='dispatch')
 class AssignmentListView(ListView):
@@ -188,26 +187,7 @@ class BotListView(ListView):
     template_name = 'grade/bot_list.html'
     context_object_name = 'bots'
 
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from .forms import BotForm
-from .bots import create_bot
 
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from .forms import BotForm
-from .bots import create_bot
-import traceback
-
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from .forms import BotForm
-from .models import Grade, Language, Student
-from .bots import create_bot
-import json
 
 class BotCreateView(LoginRequiredMixin, CreateView):
     form_class = BotForm
