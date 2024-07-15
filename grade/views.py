@@ -1,5 +1,6 @@
-from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
+import json
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -9,8 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import AssignmentForm, GradeForm, StudentForm, BotForm
 from .models import Assignment, Grade, Language, Student, Bot
-from .services import process_submission_with_ai  # Importa la función síncrona
-import json
+from .services import process_submission_with_ai
+from studio.models import Course, Subject
 
 @method_decorator(login_required, name='dispatch')
 class AssignmentListView(ListView):
@@ -189,34 +190,26 @@ class BotListView(ListView):
 
 
 
+
+
 class BotCreateView(LoginRequiredMixin, CreateView):
     form_class = BotForm
     template_name = 'grade/bot_form.html'
     success_url = reverse_lazy('bot-list')
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
     def form_valid(self, form):
-        print("Form is valid, attempting to save...")
         bot = form.save(commit=False)
         bot.user = self.request.user
-        
-        # Rellenar campos adicionales con valores predeterminados o el primer objeto disponible
-        bot.prompt_icebr = "Default ICEBR prompt"
-        bot.payload = json.dumps({"default": "payload"})
-        bot.prompt_default = "Default prompt"
-        bot.grade = Grade.objects.filter(user=self.request.user).first()
-        bot.language = Language.objects.first()
-        bot.student = Student.objects.filter(user=self.request.user).first()
-        
         bot.save()
-        print(f"Bot created successfully: {bot}")
-        
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        print(f"Form is invalid. Errors: {form.errors}")
-        return super().form_invalid(form)
+def load_courses(request):
+    country = request.GET.get('country')
+    courses = Course.objects.filter(country=country).order_by('name')
+    return JsonResponse(list(courses.values('id', 'name')), safe=False)
+
+def load_subjects(request):
+    course_id = request.GET.get('course')
+    subjects = Subject.objects.filter(course_id=course_id).order_by('name')
+    return JsonResponse(list(subjects.values('id', 'name')), safe=False)
+

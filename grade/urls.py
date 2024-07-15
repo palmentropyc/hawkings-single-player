@@ -2,12 +2,12 @@ from django.urls import path
 from .views import (
     AssignmentListView, AssignmentCreateView, AssignmentDetailView, AssignmentUpdateView,
     StudentDetailView, StudentListView, StudentCreateView,
-    GradeDetailView, GradeListView, GradeCreateView, BotListView, BotCreateView
+    GradeDetailView, GradeListView, GradeCreateView, BotListView, BotCreateView,
+    load_courses, load_subjects  # Importa las nuevas vistas
 )
 
-print("URLs are being loaded")
 urlpatterns = [
-path('assignment/', AssignmentListView.as_view(), name='assignment-list'),
+    path('assignment/', AssignmentListView.as_view(), name='assignment-list'),
     path('assignment/new/', AssignmentCreateView.as_view(), name='assignment_create'),
     path('assignment/<int:pk>/', AssignmentDetailView.as_view(), name='assignment_detail'),
     path('assignment/<int:pk>/edit/', AssignmentUpdateView.as_view(), name='assignment-edit'),
@@ -20,7 +20,6 @@ path('assignment/', AssignmentListView.as_view(), name='assignment-list'),
     path('bots/', BotListView.as_view(), name='bot-list'),
     path('bots/new/', BotCreateView.as_view(), name='bot-create'),
     path('bot/create/', BotCreateView.as_view(), name='bot-create'),
-
-    
+    path('ajax/load-courses/', load_courses, name='load_courses'),  # Nueva ruta
+    path('ajax/load-subjects/', load_subjects, name='load_subjects'),  # Nueva ruta
 ]
-

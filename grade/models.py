@@ -107,7 +107,7 @@ class Bot(models.Model):
     prompt_default = models.TextField(default='')
     grade = models.ForeignKey('Grade', on_delete=models.CASCADE, null=True, blank=True)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
-    student = models.ForeignKey('Student', on_delete=models.CASCADE)
+    student = models.ForeignKey('Student', on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
