@@ -8,6 +8,7 @@ from .models import Bot
 from bson import ObjectId
 from django import forms
 from .models import Bot
+from studio.openai_bots import crear_assistant_openai
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
@@ -124,13 +125,9 @@ class BotForm(forms.ModelForm):
         # Set fixed values for type and stack
         instance.type = 'content-bot'
         instance.stack = 'openai-streamlit'
-
-        # Set fixed values for prompt_icebr and payload
+        
         instance.prompt_icebr = 'en qué me puedes ayudar?'
-        instance.payload = {
-            "api_key": os.environ.get('OPENAI_API_KEY_SINGLE_PLAYER_BOTS'),
-            "assistant_id": "asst_XXXXX"
-        }
+
 
         # Set other required fields
         instance.uuid = str(ObjectId())
@@ -142,6 +139,11 @@ class BotForm(forms.ModelForm):
          # Get or create Language and Student instances
         instance.language, _ = Language.objects.get_or_create(id=1)
         instance.student = None
+        api_key = os.environ.get('OPENAI_API_KEY_SINGLE_PLAYER_BOTS')
+        instance.payload = {
+            "api_key": api_key,
+            "assistant_id": crear_assistant_openai(api_key,instance.name, instance.prompt_default)
+        }        
 
         if commit:
             instance.save()

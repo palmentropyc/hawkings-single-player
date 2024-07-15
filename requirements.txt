@@ -39,3 +39,4 @@ download-youtube-subtitle
 google-api-python-client
 requests
 beautifulsoup4
+colorama
