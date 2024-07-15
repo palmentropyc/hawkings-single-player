@@ -1,7 +1,7 @@
 
 import requests
 
-
+from django.views.generic import ListView
 from bs4 import BeautifulSoup
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -10,8 +10,12 @@ from django.views.generic import CreateView, DetailView
 from youtube_transcript_api import YouTubeTranscriptApi
 from .forms import YoutubeVideoForm
 from .models import YoutubeVideo
+from django.utils.decorators import method_decorator
+from django.http import Http404
+from django.contrib.auth.decorators import login_required
 
 from .video_functions import create_assignment_from_video
+from django.contrib.auth.mixins import LoginRequiredMixin
 
     
 class YoutubeVideoCreateView(LoginRequiredMixin, CreateView):
@@ -57,9 +61,24 @@ class YoutubeVideoCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class YoutubeVideoDetailView(LoginRequiredMixin, DetailView):
+@method_decorator(login_required, name='dispatch')
+class YoutubeVideoDetailView(DetailView):
     model = YoutubeVideo
     template_name = 'studio/youtubevideo_detail.html'
     context_object_name = 'video'
 
-    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("You don't have permission to view this video.")
+        return obj
+
+@method_decorator(login_required, name='dispatch')
+class YoutubeVideoListView(LoginRequiredMixin, ListView):
+    model = YoutubeVideo
+    template_name = 'studio/youtubevideo_list.html'
+    context_object_name = 'videos'
+    ordering = ['-id']
+
+    def get_queryset(self):
+        return YoutubeVideo.objects.filter(user=self.request.user).order_by('-id')

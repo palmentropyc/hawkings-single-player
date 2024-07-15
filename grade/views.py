@@ -184,13 +184,18 @@ class GradeDetailView(DetailView):
 
 
 
+@method_decorator(login_required, name='dispatch')
 class BotListView(ListView):
     model = Bot
     template_name = 'grade/bot_list.html'
     context_object_name = 'bots'
+    ordering = ['-id']  # Order by id in descending order
+
+    def get_queryset(self):
+        return Bot.objects.filter(user=self.request.user).order_by('-id')
 
 
-
+@method_decorator(login_required, name='dispatch')
 class BotCreateView(LoginRequiredMixin, CreateView):
     form_class = BotForm
     template_name = 'grade/bot_form.html'

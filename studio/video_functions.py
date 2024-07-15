@@ -13,8 +13,10 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django_celery_results.models import TaskResult
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView
+
 from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from openai import OpenAI
 
@@ -146,10 +148,5 @@ def download_log_file(request, file_path):
             return response
     raise Http404
 
-class YoutubeVideoListView(LoginRequiredMixin, ListView):
-    model = YoutubeVideo
-    template_name = 'studio/youtubevideo_list.html'
-    context_object_name = 'videos'
-    ordering = ['-id']
 
 

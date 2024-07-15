@@ -1,6 +1,5 @@
 from django.urls import path
-from .video_functions import YoutubeVideoListView
-from .views import YoutubeVideoCreateView, YoutubeVideoDetailView
+from .views import YoutubeVideoCreateView, YoutubeVideoDetailView, YoutubeVideoListView
 
 app_name = 'studio'
 

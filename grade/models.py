@@ -129,6 +129,7 @@ class BotMessage(models.Model):
     tokens = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)    
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Message from {self.from_role} at {self.created_at}"
