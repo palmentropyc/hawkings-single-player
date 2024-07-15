@@ -6,10 +6,12 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .forms import AssignmentForm, GradeForm, StudentForm
-from .models import Assignment, Grade, Language, Student
+from .forms import AssignmentForm, GradeForm, StudentForm, BotForm
+from .models import Assignment, Grade, Language, Student, Bot
 from .services import process_submission_with_ai  # Importa la función síncrona
 
+
+from .bots import create_bot
 
 @method_decorator(login_required, name='dispatch')
 class AssignmentListView(ListView):
@@ -176,3 +178,65 @@ class GradeDetailView(DetailView):
             process_submission_with_ai(grade.id)
             # Puedes añadir un mensaje de éxito o cualquier otra lógica aquí
         return self.get(request, *args, **kwargs)
+
+
+
+
+
+class BotListView(ListView):
+    model = Bot
+    template_name = 'grade/bot_list.html'
+    context_object_name = 'bots'
+
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .forms import BotForm
+from .bots import create_bot
+
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .forms import BotForm
+from .bots import create_bot
+import traceback
+
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .forms import BotForm
+from .models import Grade, Language, Student
+from .bots import create_bot
+import json
+
+class BotCreateView(LoginRequiredMixin, CreateView):
+    form_class = BotForm
+    template_name = 'grade/bot_form.html'
+    success_url = reverse_lazy('bot-list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        print("Form is valid, attempting to save...")
+        bot = form.save(commit=False)
+        bot.user = self.request.user
+        
+        # Rellenar campos adicionales con valores predeterminados o el primer objeto disponible
+        bot.prompt_icebr = "Default ICEBR prompt"
+        bot.payload = json.dumps({"default": "payload"})
+        bot.prompt_default = "Default prompt"
+        bot.grade = Grade.objects.filter(user=self.request.user).first()
+        bot.language = Language.objects.first()
+        bot.student = Student.objects.filter(user=self.request.user).first()
+        
+        bot.save()
+        print(f"Bot created successfully: {bot}")
+        
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print(f"Form is invalid. Errors: {form.errors}")
+        return super().form_invalid(form)

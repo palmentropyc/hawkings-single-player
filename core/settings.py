@@ -49,6 +49,7 @@ LOGGING = {
             'style': '{',
         },
     },
+    
     'handlers': {
         'file': {
             'level': 'DEBUG',

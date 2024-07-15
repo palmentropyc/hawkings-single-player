@@ -94,6 +94,8 @@ class Grade(models.Model):
 class Bot(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.CharField(max_length=24, default=str(ObjectId()))
+    name = models.CharField(max_length=255)
+    description = models.TextField()
     type = models.CharField(max_length=255)
     stack = models.CharField(max_length=255)
     prompt_icebr = models.TextField(default='')
@@ -103,13 +105,13 @@ class Bot(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     prompt_default = models.TextField(default='')
-    grade = models.ForeignKey('Grade', on_delete=models.CASCADE)
+    grade = models.ForeignKey('Grade', on_delete=models.CASCADE, null=True, blank=True)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
     student = models.ForeignKey('Student', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Bot {self.id} - {self.type}"
+        return f"{self.name} - {self.type}"
 
     def save(self, *args, **kwargs):
         if not self.uuid:

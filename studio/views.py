@@ -61,3 +61,5 @@ class YoutubeVideoDetailView(LoginRequiredMixin, DetailView):
     model = YoutubeVideo
     template_name = 'studio/youtubevideo_detail.html'
     context_object_name = 'video'
+
+    
