@@ -1,14 +1,13 @@
-import json
 import os
 from django import forms
-from django.contrib.auth.models import User
 from .models import Assignment, Language, Student, Grade
 from django import forms
 from .models import Bot
 from bson import ObjectId
-from django import forms
-from .models import Bot
 from studio.openai_bots import crear_assistant_openai
+from studio.models import Course, Subject
+from django_countries import countries
+
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
@@ -67,86 +66,81 @@ class GradeForm(forms.ModelForm):
         return instance
     
 
-
-
-
-
-from studio.models import Course, Subject
-from django_countries.fields import CountryField
-
-
-
-from django import forms
-from .models import Bot
-from studio.models import Course, Subject
-from django_countries.fields import CountryField
-from django_countries import countries
-
-
 class BotForm(forms.ModelForm):
     country = forms.ChoiceField(choices=[])
     course = forms.ModelChoiceField(queryset=Course.objects.none(), required=False)
     subject = forms.ModelChoiceField(queryset=Subject.objects.none(), required=False)
+    custom_prompt = forms.CharField(widget=forms.Textarea, required=False)
 
     class Meta:
         model = Bot
-        fields = ['name', 'description', 'country', 'course', 'subject']
+        fields = ['country', 'course', 'subject', 'custom_prompt']
 
     def __init__(self, *args, **kwargs):
         super(BotForm, self).__init__(*args, **kwargs)
+        self.initialize_country_choices()
+        self.initialize_course_and_subject_choices()
+
+    def initialize_country_choices(self):
         available_countries = Course.objects.values_list('country', flat=True).distinct()
         country_choices = [(code, name) for code, name in countries if code in available_countries]
         self.fields['country'].choices = country_choices
 
+    def initialize_course_and_subject_choices(self):
         if 'country' in self.data:
-            try:
-                country = self.data.get('country')
-                self.fields['course'].queryset = Course.objects.filter(country=country).order_by('name')
-            except (ValueError, TypeError):
-                pass
-
+            self.set_course_queryset()
         if 'course' in self.data:
-            try:
-                course_id = int(self.data.get('course'))
-                self.fields['subject'].queryset = Subject.objects.filter(course_id=course_id).order_by('name')
-            except (ValueError, TypeError):
-                pass
-
+            self.set_subject_queryset()
         elif self.instance.pk:
-            self.fields['course'].queryset = self.instance.country.course_set.order_by('name')
-            self.fields['subject'].queryset = self.instance.course.subject_set.order_by('name')
+            self.set_instance_course_and_subject_queryset()
+
+    def set_course_queryset(self):
+        try:
+            country = self.data.get('country')
+            self.fields['course'].queryset = Course.objects.filter(country=country).order_by('name')
+        except (ValueError, TypeError):
+            pass
+
+    def set_subject_queryset(self):
+        try:
+            course_id = int(self.data.get('course'))
+            self.fields['subject'].queryset = Subject.objects.filter(course_id=course_id).order_by('name')
+        except (ValueError, TypeError):
+            pass
+
+    def set_instance_course_and_subject_queryset(self):
+        self.fields['course'].queryset = self.instance.country.course_set.order_by('name')
+        self.fields['subject'].queryset = self.instance.course.subject_set.order_by('name')
 
     def save(self, commit=True):
         instance = super().save(commit=False)
+        self.set_instance_fields(instance)
+        self.set_instance_prompt_fields(instance)
+        if commit:
+            instance.save()
+        return instance
+
+    def set_instance_fields(self, instance):
         instance.country = self.cleaned_data['country']
         instance.course = self.cleaned_data['course']
         instance.subject = self.cleaned_data['subject']
-
-        # Set fixed values for type and stack
+        instance.custom_prompt = self.cleaned_data['custom_prompt']
         instance.type = 'content-bot'
         instance.stack = 'openai-streamlit'
-        
         instance.prompt_icebr = 'en qué me puedes ayudar?'
-
-
-        # Set other required fields
         instance.uuid = str(ObjectId())
         instance.enabled = True
-        instance.prompt_default = f"Eres un tutor académico que trabajas en {instance.country}, en la asignatura {instance.subject.name} del curso {instance.course.name}. Ayuda al alumno a lo que te pregunte adaptándote al temario de esa asignatura"
         instance.grade = None
-        instance.name = f'Tutor de {instance.subject.name}'
-        instance.description = f'Tutor de {instance.subject.name} del curso {instance.course.name}, {instance.country}'
-         # Get or create Language and Student instances
         instance.language, _ = Language.objects.get_or_create(id=1)
         instance.student = None
-        api_key = os.environ.get('OPENAI_API_KEY_SINGLE_PLAYER_BOTS')
-        instance.payload = {
-            "api_key": api_key,
-            "assistant_id": crear_assistant_openai(api_key,instance.name, instance.prompt_default)
-        }        
 
-        if commit:
-            instance.save()
+    def set_instance_prompt_fields(self, instance):
+        instance.prompt_default = f"Eres un tutor académico que trabajas en {instance.country}, en la asignatura {instance.subject.name} del curso {instance.course.name}. Ayuda al alumno a lo que te pregunte adaptándote al temario de esa asignatura."
+        instance.name = f'Tutor de {instance.subject.name}'
+        instance.description = f'Tutor de {instance.subject.name} del curso {instance.course.name}, {instance.country}'
+        final_prompt = f"{instance.prompt_default} \n Además, el profesor ha dado estas instrucciones: \n {self.cleaned_data['custom_prompt'] }"
+        instance.final_prompt = final_prompt
 
-        return instance
-
+    def get_final_prompt(self):
+        instance = self.instance
+        return f"{instance.prompt_default} \n Además, el profesor ha dado estas instrucciones: \n {self.cleaned_data['custom_prompt'] }"

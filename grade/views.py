@@ -1,4 +1,4 @@
-import json
+import os
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -12,6 +12,7 @@ from .forms import AssignmentForm, GradeForm, StudentForm, BotForm
 from .models import Assignment, Grade, Language, Student, Bot
 from .services import process_submission_with_ai
 from studio.models import Course, Subject
+from openai import OpenAI
 
 @method_decorator(login_required, name='dispatch')
 class AssignmentListView(ListView):
@@ -190,16 +191,34 @@ class BotListView(ListView):
 
 
 
-
-
 class BotCreateView(LoginRequiredMixin, CreateView):
     form_class = BotForm
     template_name = 'grade/bot_form.html'
     success_url = reverse_lazy('bot-list')
 
+
     def form_valid(self, form):
+        
+        def crear_assistant_openai(api_key, name, prompt):
+            client = OpenAI(api_key=api_key)    
+            assistant = client.beta.assistants.create(
+                    name=name,
+                    instructions=prompt,
+                    model="gpt-4o",
+                    tools=[{"type": "file_search"}],
+                )        
+            return assistant.id
+        
         bot = form.save(commit=False)
         bot.user = self.request.user
+        
+        # Crear el asistente de OpenAI aquí
+        api_key = os.environ.get('OPENAI_API_KEY_SINGLE_PLAYER_BOTS')
+        bot.payload = {
+            "api_key": api_key,
+            "assistant_id": crear_assistant_openai(api_key, bot.name, bot.final_prompt)
+        }
+        
         bot.save()
         return super().form_valid(form)
 

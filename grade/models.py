@@ -105,6 +105,7 @@ class Bot(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     prompt_default = models.TextField(default='')
+    custom_prompt = models.TextField(default='')
     grade = models.ForeignKey('Grade', on_delete=models.CASCADE, null=True, blank=True)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
     student = models.ForeignKey('Student', on_delete=models.CASCADE, null=True, blank=True)

@@ -10,7 +10,6 @@ init()
 
 def crear_assistant_openai(api_key, name, prompt):
     client = OpenAI(api_key=api_key)
-    
     print(f"{Fore.GREEN}API Key: {api_key}{Style.RESET_ALL}")
     print(f"{Fore.GREEN}Name: {name}{Style.RESET_ALL}")
     print(f"{Fore.GREEN}Prompt: {prompt}{Style.RESET_ALL}")
@@ -21,7 +20,6 @@ def crear_assistant_openai(api_key, name, prompt):
             model="gpt-4o",
             tools=[{"type": "file_search"}],
         )        
-
         return assistant.id
     except Exception as e:
         print(f"{Fore.RED}Error al crear o actualizar el asistente: {str(e)}{Style.RESET_ALL}")
