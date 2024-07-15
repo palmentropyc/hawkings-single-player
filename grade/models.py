@@ -91,9 +91,11 @@ class Grade(models.Model):
             self.uuid = str(ObjectId())
         super().save(*args, **kwargs)
 
+
 class Bot(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.CharField(max_length=24, default=str(ObjectId()))
+    slug = models.SlugField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(max_length=255)
@@ -118,3 +120,15 @@ class Bot(models.Model):
         if not self.uuid:
             self.uuid = str(ObjectId())
         super().save(*args, **kwargs)
+
+class BotMessage(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    uuid = models.CharField(max_length=24, default=str(ObjectId()))
+    message = models.TextField()
+    from_role = models.CharField(max_length=255)
+    tokens = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)    
+    bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Message from {self.from_role} at {self.created_at}"

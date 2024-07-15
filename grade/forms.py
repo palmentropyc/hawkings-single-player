@@ -4,10 +4,10 @@ from .models import Assignment, Language, Student, Grade
 from django import forms
 from .models import Bot
 from bson import ObjectId
-from studio.openai_bots import crear_assistant_openai
 from studio.models import Course, Subject
 from django_countries import countries
-
+import random
+import string
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
@@ -119,8 +119,20 @@ class BotForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+    
 
+
+
+    
     def set_instance_fields(self, instance):
+
+        def create_slug(name):
+            if hasattr(name, 'name'):  # Check if the name has a 'name' attribute
+                name = name.name
+            trimmed_name = name[:16].replace(' ', '-').replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u').lower()
+            random_hex = ''.join(random.choices(string.hexdigits.lower(), k=5))
+            return f"{trimmed_name}-{random_hex}"
+        
         instance.country = self.cleaned_data['country']
         instance.course = self.cleaned_data['course']
         instance.subject = self.cleaned_data['subject']
@@ -133,6 +145,7 @@ class BotForm(forms.ModelForm):
         instance.grade = None
         instance.language, _ = Language.objects.get_or_create(id=1)
         instance.student = None
+        instance.slug = create_slug(instance.subject)
 
     def set_instance_prompt_fields(self, instance):
         instance.prompt_default = f"Eres un tutor académico que trabajas en {instance.country}, en la asignatura {instance.subject.name} del curso {instance.course.name}. Ayuda al alumno a lo que te pregunte adaptándote al temario de esa asignatura."
