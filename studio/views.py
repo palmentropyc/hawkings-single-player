@@ -1,126 +1,19 @@
-from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-from django.http import Http404, HttpResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView
-from youtube_transcript_api import YouTubeTranscriptApi
-from celery.result import AsyncResult
-from django_celery_results.models import TaskResult
-from .models import YoutubeVideo
-from .forms import YoutubeVideoForm
-import json
-import os
-from os.path import isfile, join
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
-from django.urls import reverse_lazy
-from .models import YoutubeVideo
-from .forms import YoutubeVideoForm
-from youtube_transcript_api import YouTubeTranscriptApi
-from googleapiclient.discovery import build
-import os
+
 import requests
 
-
-def youtubevideo_create(request):
-    if request.method == 'POST':
-        form = YoutubeVideoForm(request.POST)
-        if form.is_valid():
-            video = form.save(commit=False)
-            try:
-                transcript = YouTubeTranscriptApi.get_transcript(video.video_id)
-                video.transcript = '\n'.join([entry['text'] for entry in transcript])
-            except Exception as e:
-                messages.error(request, f"Error fetching transcript: {str(e)}")
-            video.save()
-            return redirect('studio:youtubevideo-list')
-    else:
-        form = YoutubeVideoForm()
-    return render(request, 'studio/youtubevideo_form.html', {'form': form})
-
-def task_output(request):
-    '''
-    Returns a task output 
-    '''
-
-    task_id = request.GET.get('task_id')
-    task    = TaskResult.objects.get(id=task_id)
-
-    if not task:
-        return ''
-
-    # task.result -> JSON Format
-    return HttpResponse( task.result )
-
-def task_log(request):
-    '''
-    Returns a task LOG file (if located on disk) 
-    '''
-
-    task_id  = request.GET.get('task_id')
-    task     = TaskResult.objects.get(id=task_id)
-    task_log = 'NOT FOUND'
-
-    if not task: 
-        return ''
-
-    try: 
-
-        # Get logs file
-        all_logs = [f for f in os.listdir(settings.CELERY_LOGS_DIR) if isfile(join(settings.CELERY_LOGS_DIR, f))]
-        
-        for log in all_logs:
-
-            # Task HASH name is saved in the log name
-            if task.task_id in log:
-                
-                with open( os.path.join( settings.CELERY_LOGS_DIR, log) ) as f:
-                    
-                    # task_log -> JSON Format
-                    task_log = f.readlines() 
-
-                break    
-    
-    except Exception as e:
-
-         task_log = json.dumps( { 'Error CELERY_LOGS_DIR: ' : str( e) } )
-
-    return HttpResponse(task_log)
-
-def download_log_file(request, file_path):
-    path = file_path.replace('%slash%', '/')
-    if os.path.exists(path):
-        with open(path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
-            return response
-    raise Http404
-
-class YoutubeVideoListView(LoginRequiredMixin, ListView):
-    model = YoutubeVideo
-    template_name = 'studio/youtubevideo_list.html'
-    context_object_name = 'videos'
-    ordering = ['-id']
-
-
-
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
-from django.urls import reverse_lazy
-from .models import YoutubeVideo
-from .forms import YoutubeVideoForm
-from youtube_transcript_api import YouTubeTranscriptApi
-import requests
-import os
-import json
 
 from bs4 import BeautifulSoup
-import requests
-import re
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DetailView
 
+from youtube_transcript_api import YouTubeTranscriptApi
+from .forms import YoutubeVideoForm
+from .models import YoutubeVideo
+
+from .video_functions import create_assignment_from_video
+
+    
 class YoutubeVideoCreateView(LoginRequiredMixin, CreateView):
     model = YoutubeVideo
     form_class = YoutubeVideoForm
@@ -156,6 +49,7 @@ class YoutubeVideoCreateView(LoginRequiredMixin, CreateView):
             transcript = YouTubeTranscriptApi.get_transcript(video.video_id)
             video.transcript = '\n'.join([entry['text'] for entry in transcript])
             print(f"DEBUG: Transcripción obtenida. Longitud: {len(video.transcript)}")
+            create_assignment_from_video(video)
         except Exception as e:
             print(f"DEBUG: Error al obtener la transcripción: {str(e)}")
 

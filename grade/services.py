@@ -111,7 +111,7 @@ def process_with_ai(grade):
     print(f"Full prompt: {full_prompt}")
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[{"role": "system", "content": "Resume este texto"}, {"role": "user", "content": full_prompt}]
     )
     grade.grade_feedback = response.choices[0].message.content
