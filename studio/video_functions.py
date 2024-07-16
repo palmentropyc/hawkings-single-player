@@ -1,4 +1,4 @@
-from grade.models import Assignment, Language
+from grade.models import Assignment, Language, EvaluationPrompt
 from os.path import isfile, join
 import json
 import os
@@ -26,11 +26,13 @@ from openai import OpenAI
 def create_assignment_questions_from_video(video_description):
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     print("Generando examen")
+    system_prompt = EvaluationPrompt.objects.get(label="youtube_generation_prompt").prompt_text
+    print("\033[92m" + system_prompt + "\033[0m")
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "Create a exam form K12 based on this video description"},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": video_description}
             ]
         )
@@ -41,15 +43,18 @@ def create_assignment_questions_from_video(video_description):
         return ''
     
 
-def create_assignment_rubric_from_questions(questions):
+def create_assignment_rubric_from_questions(questions, video_transcript):
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-    print("Generando rúbrica")
+    print("Generando rbrica")
+    system_prompt = EvaluationPrompt.objects.get(label="youtube_rubric_prompt").prompt_text
+    print("\033[94m" + system_prompt + "\033[0m")
+    user_message = f"ESTAS SON LAS PREGUNTAS DEL EXAMEN:\n\n {questions}\n\nESTA ES LA TRANSCRIPCIÓN DEL VIDEO: {video_transcript}"
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "Create a rubric for this exam of K12, with points form 0 to 10"},
-                {"role": "user", "content": questions}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
             ]
         )
         response.choices[0].message.content
@@ -63,7 +68,7 @@ def create_assignment_from_video(video):
     print(f"DEBUG: Video transcript length: {len(video.transcript)}")
     print(f"DEBUG: Video user: {video.user}")
     assignment_questions = create_assignment_questions_from_video(video.transcript)
-    assignment_rubric = create_assignment_rubric_from_questions(assignment_questions)
+    assignment_rubric = create_assignment_rubric_from_questions(assignment_questions, video.transcript)
     assignment_full_text = ''
 
     assignment = Assignment.objects.create(        

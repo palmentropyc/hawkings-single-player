@@ -1,6 +1,6 @@
 import decimal
 import time  
-from .models import Grade  
+from .models import Grade, EvaluationPrompt
 import os
 import PyPDF2
 import os
@@ -11,51 +11,7 @@ import logging
 
 logger = logging.getLogger('django')
 
-prompt_template = """ROLE: 
-Eres un profesor excepcional, experto de la asignatura:\ {assignment_name}\n del curso:\ {course_name}\n en el país :\ {country_name}\n.
-
-El alumno se llama: \{student_name}\n
-
-OBJETIVO:
-Haces correcciones minuciosas y das feedback constructivo sobre los exámenes y tareas de los estudiantes. Para ello, siempre utilizas una rúbrica claramente definida para asegurarte de que tu evaluación sea precisa y tu feedback, significativo; ayudando así a los estudiantes en su desarrollo académico.
-
-RÚBRICA:
-:\ {assignment_rubric}\n
-
-OUTPUT:
-Tu respuesta debe tener siempre esta estructura:
-
-Puntuación por área: 
-Puntuación individual de cada área de la rúbrica.
-
-Feedback de cada pregunta / ejercicio: 
-[Proporciona feedback detallado para cada pregunta / ejercicio en el examen, centrándote en las fortalezas y las áreas de mejora (si hubiera). Utiliza ejemplos de las respuestas del estudiante para sustentar tu evaluación. No asignes ninguna puntuación a cada pregunta.] 
-
-Fortalezas y Áreas de mejora:
-[Proporciona un resumen general de fortalezas y áreas de mejora general del examen.]
-
-Resumen y reflexión: 
-[Concluye con un resumen comprensivo del desempeño, resalta las deficiencias y proporciona consejos claros y accionables para la corrección. Ofrece también cinco preguntas reflexivas diseñadas para promover la autoevaluación. Luego termina con una frase breve motivadora y alentadora para el alumno.]
-
-REQUISITOS: 
-1. Sigue siempre los siguientes pasos para realizar tu evaluación:
-1.1 - Inicialmente, resume el examen para asegurar una comprensión completa de sus requisitos y objetivos. 
-1.2 - Evalúa el examen en su conjunto en función de cada criterio específico que se detalla en la rúbrica.
-1.3 - Elabora feedback sobre las fortalezas y áreas de mejora, incluyendo ejemplos concretos para guiar cómo el estudiante podría haber cumplido mejor con los criterios de respuesta.
-1.4 - Redacta tu evaluación siguiendo la estructura explicada en el OUTPUT.
-2. Asegúrate de que el feedback se entregue en un tono cálido, amigable y motivador, apropiado para un estudiante del curso :\ {course_name}\n  , fomentando un ambiente de apoyo en lugar de autoridad.
-3. Todas las respuestas y todos los títulos deben estar redactados en el idioma :\ {language_name}\n
-
-
-PREGUNTAS DEL EXAMEN:
-
-:\ {assignment_questions}\n
-
-RESPUESTAS DEL ALUMNO:
  
-:\ {grade_student_response}\n
-
-"""
 
 
 def process_submission_with_ai(grade_id):
@@ -83,6 +39,7 @@ def generate_prompt(grade):
 
     course_name = "Curso"
     country_name = "España"
+    prompt_template = EvaluationPrompt.objects.get(label="default_prompt").prompt_text
 
     final_prompt = prompt_template.format(
         student_name=grade.student.name,
@@ -91,12 +48,11 @@ def generate_prompt(grade):
         country_name=country_name,
         language_name=grade.assignment.language.name,
         assignment_rubric=grade.assignment.assignment_rubric,
-        assignment_questions=grade.assignment.assignment_questions,
-        grade_student_response=grade.grade_student_response
+        assignment_questions=grade.assignment.assignment_questions,        
     )
-
-    #grade.grader_comments = final_prompt
+    
     grade.save()
+    print(final_prompt)
 
     return final_prompt
 
@@ -108,12 +64,15 @@ def process_with_ai(grade):
     
     full_prompt = generate_prompt(grade)
     logger.debug(f"Full prompt: {full_prompt}")
-    print(f"Full prompt: {full_prompt}")
+    #print(f"----------------------------SYSTEM PROMPT:\n {full_prompt}")
+    #print(f"----------------------------USER PROMPT:\n {grade.grade_student_response}")
+    
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     response = client.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "system", "content": "Corrige este examen"}, {"role": "user", "content": full_prompt}]
+        messages=[{"role": "system", "content": full_prompt}, {"role": "user", "content": grade.grade_student_response}]
     )
+    
     grade.grade_feedback = response.choices[0].message.content
     grade.ai_status = 'ai_processed_ok'  
     grade.save()

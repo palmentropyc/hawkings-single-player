@@ -133,3 +133,19 @@ class BotMessage(models.Model):
 
     def __str__(self):
         return f"Message from {self.from_role} at {self.created_at}"
+
+
+class EvaluationPrompt(models.Model):
+    id = models.AutoField(primary_key=True)
+    label = models.CharField(max_length=255)
+    version = models.CharField(max_length=10)
+    prompt_text = models.TextField()
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
+    course_name = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.label} - v{self.version}"
+
+    class Meta:
+        verbose_name = "Evaluation Prompt"
+        verbose_name_plural = "Evaluation Prompts"
