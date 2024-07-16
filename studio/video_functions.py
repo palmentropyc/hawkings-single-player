@@ -3,7 +3,7 @@ from os.path import isfile, join
 import json
 import os
 from googleapiclient.discovery import build
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from .forms import YoutubeVideoForm
 from .models import YoutubeVideo
 from celery.result import AsyncResult
@@ -19,6 +19,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 from openai import OpenAI
+
+
 
 
 def create_assignment_questions_from_video(video_description):
@@ -74,21 +76,6 @@ def create_assignment_from_video(video):
     )
     assignment.save()
 
-def youtubevideo_create(request):
-    if request.method == 'POST':
-        form = YoutubeVideoForm(request.POST)
-        if form.is_valid():
-            video = form.save(commit=False)
-            try:
-                transcript = YouTubeTranscriptApi.get_transcript(video.video_id)
-                video.transcript = '\n'.join([entry['text'] for entry in transcript])
-            except Exception as e:
-                messages.error(request, f"Error fetching transcript: {str(e)}")
-            video.save()
-            return redirect('studio:youtubevideo-list')
-    else:
-        form = YoutubeVideoForm()
-    return render(request, 'studio/youtubevideo_form.html', {'form': form})
 
 def task_output(request):
     '''
@@ -148,5 +135,58 @@ def download_log_file(request, file_path):
             return response
     raise Http404
 
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 
+def get_transcript(video_id):
+    try:
+        # Listar todas las transcripciones disponibles
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        available_transcripts = {}
+        
+        for transcript in transcript_list:
+            available_transcripts[transcript.language_code] = transcript
+            # Imprimir las propiedades de cada transcripción
+            print(
+                transcript.video_id,
+                transcript.language,
+                transcript.language_code,
+                transcript.is_generated,
+                transcript.is_translatable,
+                transcript.translation_languages,
+            )
+        
+        # Intentar obtener la transcripción en inglés
+        if 'en' in available_transcripts:
+            transcript_data = available_transcripts['en'].fetch()
+            return transcript_data
+        
+        # Si falla, intentar obtener la transcripción en español
+        if 'es' in available_transcripts:
+            transcript_data = available_transcripts['es'].fetch()
+            return transcript_data
+        
+        # Si falla, obtener la primera transcripción disponible en otro idioma
+        for lang_code, transcript in available_transcripts.items():
+            transcript_data = transcript.fetch()
+            return transcript_data
+            
+    except (TranscriptsDisabled, NoTranscriptFound) as e:
+        print(f"Error retrieving transcripts: {e}")
+        return None
 
+def youtubevideo_create(request):
+    if request.method == 'POST':
+        form = YoutubeVideoForm(request.POST)
+        if form.is_valid():
+            video = form.save(commit=False)
+            transcript = get_transcript(video.video_id)
+            
+            if transcript:
+                video.transcript = '\n'.join([entry['text'] for entry in transcript])
+                video.save()
+            else:
+                messages.error(request, "No transcript available in any language.")
+            return redirect('studio:youtubevideo-list')
+    else:
+        form = YoutubeVideoForm()
+    return render(request, 'studio/youtubevideo_form.html', {'form': form})
