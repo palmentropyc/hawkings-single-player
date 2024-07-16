@@ -138,7 +138,6 @@ class GradeCreateView(CreateView):
     model = Grade
     form_class = GradeForm
     template_name = 'grade/grade_form.html'
-    success_url = reverse_lazy('grade-list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -149,11 +148,14 @@ class GradeCreateView(CreateView):
         
         return response
 
+    def get_success_url(self):
+        return reverse('grade_detail', kwargs={'pk': self.object.pk})
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['languages'] = Language.objects.all()
-        context['assignments'] = Assignment.objects.filter(user=self.request.user)
-        context['students'] = Student.objects.filter(user=self.request.user)
+        context['assignments'] = Assignment.objects.filter(user=self.request.user).order_by('-created_at')
+        context['students'] = Student.objects.filter(user=self.request.user).order_by('-created_at')
         context['current_datetime'] = timezone.now()
         return context
 

@@ -55,7 +55,7 @@ class GradeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.user:
             self.fields['student'].queryset = Student.objects.filter(user=self.user)
-            self.fields['assignment'].queryset = Assignment.objects.filter(user=self.user)
+            self.fields['assignment'].queryset = Assignment.objects.filter(user=self.user).order_by('-created_at')
 
     def save(self, commit=True):
         instance = super().save(commit=False)

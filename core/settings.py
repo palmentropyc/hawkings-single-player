@@ -123,8 +123,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'django_countries',
     'widget_tweaks',
-    'tailwind',
-    'theme',
+    
     
 
 

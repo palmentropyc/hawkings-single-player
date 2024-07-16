@@ -95,7 +95,7 @@ def generate_prompt(grade):
         grade_student_response=grade.grade_student_response
     )
 
-    grade.grader_comments = final_prompt
+    #grade.grader_comments = final_prompt
     grade.save()
 
     return final_prompt
@@ -112,7 +112,7 @@ def process_with_ai(grade):
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     response = client.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "system", "content": "Resume este texto"}, {"role": "user", "content": full_prompt}]
+        messages=[{"role": "system", "content": "Corrige este examen"}, {"role": "user", "content": full_prompt}]
     )
     grade.grade_feedback = response.choices[0].message.content
     grade.ai_status = 'ai_processed_ok'  
@@ -129,7 +129,7 @@ def update_grade_initial_status(grade):
     logger.debug(f'Processing file {grade.local_path}')
     print(f'Processing file {grade.local_path}')
     grade.ai_status = 'processing'
-    grade.grader_comments = 'Procesando...'
+    #grade.grader_comments = 'Procesando...'
 
 def update_grade_numeric(grade):
     logger.debug(f"Updating numeric grade for grade: {grade.id}")

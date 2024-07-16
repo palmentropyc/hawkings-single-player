@@ -1,6 +1,10 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
 {% block content %}
 <main class="p-4 bg-white dark:bg-gray-800">
   <div class="block sm:flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -46,19 +50,25 @@
     <div class="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
       <div class="flex items-center">
         <label for="grade" class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Grade:</label>
-        <input type="number" id="grade" name="grade" value="{{ grade.grade_numeric }}" class="w-20 p-1 text-lg font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+        <input type="number" id="grade" name="grade" value="{{ grade.grade_numeric }}" class="w-20 p-1 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
       </div>
       <div class="flex items-center">
         <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Evaluated At:</span>
-        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.evaluated_at }}</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ grade.evaluated_at }}</span>
       </div>
       <div class="flex items-center">
         <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">AI Status:</span>
-        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.ai_status }}</span>
+        {% if grade.ai_status == 'ai_processed_ok' %}
+          <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-green-900 dark:text-green-300">Processed OK</span>
+        {% elif grade.ai_status == 'Error' %}
+          <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-red-900 dark:text-red-300">Error</span>
+        {% else %}
+          <span class="text-sm font-medium text-gray-900 dark:text-white">{{ grade.ai_status }}</span>
+        {% endif %}
       </div>
       <div class="flex items-center">
         <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Language:</span>
-        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ grade.language.name }}</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ grade.language.name }}</span>
       </div>
       <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -73,15 +83,22 @@
     
     <div class="mt-6">
       <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Feedback and Comments</h3>
-      <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grade Feedback</p>
-        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grade_feedback }}</p>
-      </div>
+
       <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Grader Comments</p>
-        <p class="mt-1 text-gray-900 dark:text-white">{{ grade.grader_comments }}</p>
+        <p class="mt-1 text-gray-900 dark:text-white whitespace-pre-line">{{ grade.grader_comments }}</p>
       </div>
     </div>
+
+
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Grade Feedback</h3>
+      <textarea id="markdown-editor">{{ grade.grade_feedback }}</textarea>
+      
+    </div>
+  
+
+ 
 
     <div class="mt-6">
       <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Questions and Rubric</h3>
@@ -100,7 +117,7 @@
       <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Student Response</h3>
       <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Grade Student Response:</p>
-        <textarea class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" rows="10" readonly>{{ grade.grade_student_response }}</textarea>
+        <textarea class="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" rows="10" readonly style="white-space: pre-wrap;">{{ grade.grade_student_response }}</textarea>
       </div>
     </div>
     {% endif %}
@@ -129,5 +146,22 @@
 
 
   </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var simplemde = new SimpleMDE({ 
+      element: document.getElementById("markdown-editor"),
+      spellChecker: false,
+    });
+    
+    // Render the initial Markdown content
+    document.getElementById('rendered-feedback').innerHTML = simplemde.options.previewRender(simplemde.value());
+    
+    // Update the rendered content when the editor content changes
+    simplemde.codemirror.on("change", function(){
+      document.getElementById('rendered-feedback').innerHTML = simplemde.options.previewRender(simplemde.value());
+    });
+  });
+</script>
 </main>
 {% endblock content %}
