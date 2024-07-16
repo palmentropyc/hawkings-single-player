@@ -1,14 +1,76 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 
-
 {% block content %}
 
-<main>
-  <div class="px-4 pt-6">
-    <div class="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-      <!-- Main widget -->
+<main class="bg-white dark:bg-gray-900 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-4">
+        <i class="fas fa-graduation-cap mr-2"></i>Welcome to Hawkings Education
+      </h1>
+      <p class="text-xl text-gray-700 dark:text-gray-300">
+        Empowering learners with fun and innovative educational tools! 🚀
+      </p>
+    </div>
 
+    <div class="grid gap-8 md:grid-cols-3">
+      <!-- Box 1 -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+        <div class="bg-green-500 text-white p-4">
+          <h2 class="text-2xl font-bold mb-2">
+            <i class="fas fa-check-double mr-2"></i>Grade Exams
+          </h2>
+        </div>
+        <div class="p-6 flex-grow">
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Create assignments, upload questions and grading criteria. Then upload a PDF with each student's answers.
+          </p>
+        </div>
+        <div class="p-6 mt-auto">
+          <a href="{% url 'assignment-list' %}" class="block w-full text-center px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-300">
+            Start Grading <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Box 2 -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+        <div class="bg-blue-500 text-white p-4">
+          <h2 class="text-2xl font-bold mb-2">
+            <i class="fas fa-robot mr-2"></i>Create Bots
+          </h2>
+        </div>
+        <div class="p-6 flex-grow">
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Design custom bots for your students. Choose the subject, add your personalized instructions, and share with your class.
+          </p>
+        </div>
+        <div class="p-6 mt-auto">
+          <a href="{% url 'bot-list' %}" class="block w-full text-center px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300">
+            Create Bots <i class="fas fa-cog ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Box 3 -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+        <div class="bg-red-500 text-white p-4">
+          <h2 class="text-2xl font-bold mb-2">
+            <i class="fab fa-youtube mr-2"></i>Learn from YouTube
+          </h2>
+        </div>
+        <div class="p-6 flex-grow">
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Study from your favorite YouTuber. Find an interesting topic, generate an exam, and upload it as a PDF for AI evaluation.
+          </p>
+        </div>
+        <div class="p-6 mt-auto">
+          <a href="{% url 'studio:youtubevideo-list' %}" class="block w-full text-center px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300">
+            Explore Videos <i class="fas fa-play ml-2"></i>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </main>

@@ -12,7 +12,7 @@ import string
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['name', 'assignment_questions', 'assignment_rubric', 'assignment_full_text']
+        fields = ['name', 'assignment_questions', 'assignment_rubric', 'language']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
