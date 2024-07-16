@@ -20,6 +20,7 @@ from pathlib import Path
 import logging
 import logging.handlers
 from datetime import datetime
+from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 
@@ -34,7 +35,9 @@ os.makedirs(LOGGING_DIR, exist_ok=True)
 
 # Obtener la fecha actual en formato YYYY-MM-DD
 current_date = datetime.now().strftime('%Y-%m-%d')
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() in ['true', '1', 't']
+
+
 
 LOGGING = {
     'version': 1,
