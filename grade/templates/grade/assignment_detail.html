@@ -20,7 +20,7 @@
               <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
               </svg>
-              <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">Assignments</span>
+              <a href="/assignment" class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500 hover:text-primary-600 dark:hover:text-white" aria-current="page">Assignments</a>
             </div>
           </li>
         </ol>
@@ -39,14 +39,20 @@
         </div>
         <div>
           <label for="assignment_questions" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment Questions</label>
+          <p class="mt-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <i class="fas fa-info-circle text-blue-500 mr-1"></i> Please include assignment questions</p>
           <textarea name="assignment_questions" id="assignment_questions" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full h-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>{{ assignment.assignment_questions }}</textarea>
         </div>
         <div>
           <label for="assignment_rubric" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment Rubric</label>
+          <p class="mt-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <i class="fas fa-info-circle text-blue-500 mr-1"></i> A rubric is a scoring guide used for assessment. It lists the criteria for grading and describes what constitutes different levels of performance. Please specify the grading criteria and correct answers for each question. This will help ensure consistent and fair evaluation of student responses.</p>
           <textarea name="assignment_rubric" id="assignment_rubric" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full h-96 p-2.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>{{ assignment.assignment_rubric }}</textarea>
         </div>
         <div>
-          <label for="assignment_full_text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment Full Text</label>
+          <label for="assignment_full_text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Assignment Full Text (Optional)</label>
+          <p class="mt-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <i class="fas fa-info-circle text-blue-500 mr-1"></i> Include the complete text of the assignment here. This will be removed from the AI evaluation (for example, instructions about how to submit the assignment).</p>
           <textarea name="assignment_full_text" id="assignment_full_text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full h-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{{ assignment.assignment_full_text }}</textarea>
         </div>
       </div>

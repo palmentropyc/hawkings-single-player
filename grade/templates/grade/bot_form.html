@@ -29,12 +29,24 @@
     </div>
   </div>
 
+  <div class="mb-4">
+    <h3 class="text-base font-light text-gray-500 dark:text-gray-400 mt-4">
+      <i class="fas fa-robot mr-2"></i>Create a new bot by selecting the country, course, and subject. You can also add custom instructions.
+    </h3>
+    
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      <i class="fas fa-info-circle text-blue-500 mr-1"></i> The bot will be tailored to the specific educational context you choose.
+    </p>
+  </div>
+
   <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
     <form method="post">
       {% csrf_token %}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 gap-6">
         <div>
-          <label for="country" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Country</label>
+          <label for="country" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <i class="fas fa-globe mr-2"></i>Country
+          </label>
           <select id="country" name="country" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             <option value="">Select country</option>
             {% for country in form.fields.country.choices %}
@@ -42,25 +54,33 @@
             {% endfor %}
           </select>
         </div>
-        <div>
-          <label for="course" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
+        <div id="course-container" style="display: none;">
+          <label for="course" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <i class="fas fa-book mr-2"></i>Course
+          </label>
           <select id="course" name="course" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             <option value="">Select course</option>
           </select>
         </div>
-        <div>
-          <label for="subject" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Subject</label>
+        <div id="subject-container" style="display: none;">
+          <label for="subject" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <i class="fas fa-graduation-cap mr-2"></i>Subject
+          </label>
           <select id="subject" name="subject" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             <option value="">Select subject</option>
           </select>
         </div>
-        <div class="md:col-span-2">
-          <label for="custom_prompt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Custom instructions</label>
+        <div>
+          <label for="custom_prompt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <i class="fas fa-pencil-alt mr-2"></i>Custom instructions
+          </label>
           <textarea id="custom_prompt" name="custom_prompt" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
         </div>
       </div>
       <div class="mt-4">
-        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-primary-800">Create Bot</button>
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-primary-800">
+          <i class="fas fa-plus-circle mr-2"></i>Create Bot
+        </button>
       </div>
     </form>
   </div>
@@ -70,27 +90,38 @@
 <script type="text/javascript">
   $(document).ready(function () {
     $('#country').change(function () {
-      var url = "{% url 'load_courses' %}?country=" + $(this).val();
-      $.get(url, function (data) {
-        var course_select = $('#course');
-        course_select.empty();
-        course_select.append('<option value="">Select course</option>');
-        $.each(data, function (key, value) {
-          course_select.append('<option value="' + value.id + '">' + value.name + '</option>');
+      if ($(this).val()) {
+        var url = "{% url 'load_courses' %}?country=" + $(this).val();
+        $.get(url, function (data) {
+          var course_select = $('#course');
+          course_select.empty();
+          course_select.append('<option value="">Select course</option>');
+          $.each(data, function (key, value) {
+            course_select.append('<option value="' + value.id + '">' + value.name + '</option>');
+          });
+          $('#course-container').show();
         });
-      });
+      } else {
+        $('#course-container').hide();
+        $('#subject-container').hide();
+      }
     });
 
     $('#course').change(function () {
-      var url = "{% url 'load_subjects' %}?course=" + $(this).val();
-      $.get(url, function (data) {
-        var subject_select = $('#subject');
-        subject_select.empty();
-        subject_select.append('<option value="">Select subject</option>');
-        $.each(data, function (key, value) {
-          subject_select.append('<option value="' + value.id + '">' + value.name + '</option>');
+      if ($(this).val()) {
+        var url = "{% url 'load_subjects' %}?course=" + $(this).val();
+        $.get(url, function (data) {
+          var subject_select = $('#subject');
+          subject_select.empty();
+          subject_select.append('<option value="">Select subject</option>');
+          $.each(data, function (key, value) {
+            subject_select.append('<option value="' + value.id + '">' + value.name + '</option>');
+          });
+          $('#subject-container').show();
         });
-      });
+      } else {
+        $('#subject-container').hide();
+      }
     });
   });
 </script>
