@@ -40,3 +40,5 @@ google-api-python-client
 requests
 beautifulsoup4
 colorama
+django-tailwind 
+django-tailwind[reload]

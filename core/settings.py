@@ -120,8 +120,13 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'django_countries',
     'widget_tweaks',
+    'tailwind',
+    'theme',
+    
+
 
 ]
+TAILWIND_APP_NAME = 'theme'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
